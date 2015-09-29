@@ -123,7 +123,7 @@ static uint8 deviceName[21] =
   'D',
   ' ',
   'R',
-  '2',
+  '1',
   '-',
   '0',    // Will be replaced with number from the device address
   '0',    // Will be replaced with number from the device address
@@ -142,7 +142,7 @@ static uint8 deviceNameNew[20] =
   'D',
   ' ',
   'R',
-  '2',
+  '1',
   '-',
   '0',    // Will be replaced with number from the device address
   '0',    // Will be replaced with number from the device address
