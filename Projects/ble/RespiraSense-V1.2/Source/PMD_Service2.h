@@ -18,6 +18,8 @@
   FFF7	        Streaming	                Notify
   FFF8	        Streaming Configuration	        Write
   FFF9	        Error Codes	                Read
+  FFFA          Connection Tone                 Read
+  FFFB          Device Settings                 Read/Write
 
 **************************************************************************************************/
 
@@ -51,6 +53,8 @@ extern "C"
 #define STREAMING_UUID          0xFFF7
 #define STREAMING_CONFIG_UUID   0xFFF8
 #define ERROR_CODES_UUID        0xFFF9
+#define CONNECTION_TONE_UUID    0xFFFA
+#define SETTINGS_UUID           0xFFFB
 
 
 // Profile Parameters
@@ -63,6 +67,8 @@ extern "C"
 #define STREAMING               6
 #define STREAMING_CONFIG        7
 #define ERROR_CODES             8
+#define CONNECTION_TONE         9
+#define SETTINGS                10
 
   
 // Length of Characteristic's in bytes
@@ -75,6 +81,7 @@ extern "C"
 #define STREAMING_LEN           14
 #define STREAMING_CONFIG_LEN    1
 #define ERROR_CODES_LEN         3
+#define SETTINGS_LEN            2
 
    
 // SPI Flags
@@ -88,7 +95,8 @@ extern "C"
 #define Streaming_Stop_SPI      0x0A
 #define Latest_Data_SPI         0x0B
 #define Trend_Data_SPI          0x0C
-#define Connection_Complete_SPI 0x0D  
+#define Connection_Complete_SPI 0x0D
+#define Settings_SPI            0x0E  
  
   
 // Check to determine if particular bits are set

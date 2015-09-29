@@ -25,7 +25,7 @@ if not "%1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "E:\RS-V1.2-Bluetooth\Projects\ble\RespiraSense-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.general.xcl" --backend -f "E:\RS-V1.2-Bluetooth\Projects\ble\RespiraSense-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "E:\RS-V1.2-BLUETOOTH\Projects\ble\RESPIRASENSE-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.general.xcl" --backend -f "E:\RS-V1.2-BLUETOOTH\Projects\ble\RESPIRASENSE-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "E:\RS-V1.2-Bluetooth\Projects\ble\RespiraSense-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.general.xcl" "--debug_file=%1" --backend -f "E:\RS-V1.2-Bluetooth\Projects\ble\RespiraSense-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "E:\RS-V1.2-BLUETOOTH\Projects\ble\RESPIRASENSE-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.general.xcl" "--debug_file=%1" --backend -f "E:\RS-V1.2-BLUETOOTH\Projects\ble\RESPIRASENSE-V1.2\CC2540DB\settings\RespiraSense-V1.PMD.driver.xcl" 
 
 @echo off 
 :end

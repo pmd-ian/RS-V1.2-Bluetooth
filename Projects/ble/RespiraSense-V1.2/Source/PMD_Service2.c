@@ -18,6 +18,8 @@
   FFF7	        Streaming	                Notify
   FFF8	        Streaming Configuration	        Write
   FFF9	        Error Codes	                Read
+  FFFA          Connection Tone                 Read
+  FFFB          Device Settings                 Read/Write
 
 *=========================================================================*/
 
@@ -50,7 +52,7 @@
  * CONSTANTS
  *=========================================================================*/
 
-#define SERVAPP_NUM_ATTR_SUPPORTED        29
+#define SERVAPP_NUM_ATTR_SUPPORTED        35
 #define ATTRIBUTE16(uuid, pProps, pValue)  { {ATT_BT_UUID_SIZE, uuid}, pProps, 0, (uint8*)pValue}
 
 /*===========================================================================
@@ -71,6 +73,8 @@ CONST uint8 trend_act_data_uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(TREND_ACT_DATA_U
 CONST uint8 streaming_uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(STREAMING_UUID), HI_UINT16(STREAMING_UUID)};
 CONST uint8 streaming_config_uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(STREAMING_CONFIG_UUID), HI_UINT16(STREAMING_CONFIG_UUID)};
 CONST uint8 error_codes_uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(ERROR_CODES_UUID), HI_UINT16(ERROR_CODES_UUID)};
+CONST uint8 connection_tone_uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(CONNECTION_TONE_UUID), HI_UINT16(CONNECTION_TONE_UUID)};
+CONST uint8 settings_uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SETTINGS_UUID), HI_UINT16(SETTINGS_UUID)};
 
 uint8 MAINTENANCE_FLAG=0;
 uint8 maintenanceValue=0;
@@ -86,6 +90,7 @@ uint8 BatteryLevel=0;
 static uint8 trend_rr[1160] = {0};
 static uint8 trend_act[1160] = {0};
 static uint16 counter = 0;
+uint8 dummy=0;
 
 /*===========================================================================
  * EXTERNAL VARIABLES
@@ -122,6 +127,7 @@ static uint8 trend_act_data[TREND_ACT_DATA_LEN] = {0};
 static uint8 streaming_data[STREAMING_LEN] = {0};
 static uint8 streaming_config_data[STREAMING_CONFIG_LEN] = {0};
 static uint8 error_codes_data[ERROR_CODES_LEN] = {0};
+static uint8 settings_data[SETTINGS_LEN] = {0};
 
 
 // Attribute Descriptions
@@ -134,6 +140,8 @@ static uint8 trend_act_data_desc[19] = "Trend Act/Pos Data\0";
 static uint8 streaming_desc[10] = "Streaming\0";
 static uint8 streaming_config_desc[17] = "Streaming Config\0";
 static uint8 error_codes_desc[12] = "Error Codes\0";
+static uint8 connection_tone_desc[16] = "Connection Tone\0";
+static uint8 settings_desc[9] = "Settings\0";
 
 // Streaming Characteristic Configuration
 static gattCharCfg_t *streaming_data_config;
@@ -192,6 +200,16 @@ static gattAttribute_t pmd2AttrTbl[SERVAPP_NUM_ATTR_SUPPORTED] =
   ATTRIBUTE16(characterUUID, GATT_PERMIT_READ, &AttrProps),
   ATTRIBUTE16(error_codes_uuid, GATT_PERMIT_READ | GATT_PERMIT_WRITE, error_codes_data),
   ATTRIBUTE16(charUserDescUUID, GATT_PERMIT_READ, error_codes_desc),
+  
+   // Connection Tone 0xFFFA
+  ATTRIBUTE16(characterUUID, GATT_PERMIT_READ, &AttrProps),
+  ATTRIBUTE16(connection_tone_uuid, GATT_PERMIT_READ | GATT_PERMIT_WRITE, &dummy),
+  ATTRIBUTE16(charUserDescUUID, GATT_PERMIT_READ, connection_tone_desc),
+  
+   // Settings 0xFFFB
+  ATTRIBUTE16(characterUUID, GATT_PERMIT_READ, &AttrProps),
+  ATTRIBUTE16(settings_uuid, GATT_PERMIT_READ | GATT_PERMIT_WRITE, settings_data),
+  ATTRIBUTE16(charUserDescUUID, GATT_PERMIT_READ, settings_desc),
   
 };
   
@@ -374,6 +392,17 @@ static bStatus_t PMD2_readAttrHandler( uint16 connHandle, gattAttribute_t *pAttr
         *pLen = STREAMING_LEN;
         osal_memcpy(pValue, pAttr->pValue, *pLen);
         break;
+        
+      case CONNECTION_TONE_UUID:                      // Connection Tone
+          P0_4 = 0;  //CS PIN
+          spiWriteByte(Connection_Complete_SPI);
+          P0_4 = 1;  //CS PIN
+        break;
+        
+      case SETTINGS_UUID:                            // Device Settings
+        *pLen = SETTINGS_LEN;
+        osal_memcpy(pValue, pAttr->pValue, *pLen);
+        break;
           
           
         
@@ -501,6 +530,21 @@ static bStatus_t PMD2_writeAttrHandler( uint16 connHandle, gattAttribute_t *pAtt
           notifyApp = STREAMING_CONFIG;
         }
         break;
+  
+        
+      case SETTINGS_UUID:                         // Settings
+        if (len == 2)
+        {
+          osal_memcpy(pAttr->pValue, pValue, len);
+          
+          P0_4 = 0;  //CS PIN
+          spiWriteByte(Settings_SPI);             // send settings to DSP
+          spiWriteByte(pValue[0]);
+          spiWriteByte(pValue[1]);
+          P0_4 = 1;  //CS PIN
+        }
+        break;
+ 
         
       case GATT_CLIENT_CHAR_CFG_UUID:
         status = GATTServApp_ProcessCCCWriteReq( connHandle, pAttr, pValue, len,
